@@ -54,7 +54,7 @@ SELECT
 	s.average_salary,
 	f.food_avg,
 	CASE 
-	    WHEN abs(s.salary_increase - f.pct_change) > 10 THEN 'Yes'
+	    WHEN ABS(s.salary_increase - f.pct_change) > 10 THEN 'Yes'
         ELSE 'No'
     END AS is_difference_greater_than_10_salary_food_ratio
 FROM v_ms_gdp gdp
@@ -68,16 +68,16 @@ WHERE gdp.`year` >= 2000;
 SELECT
 	cp.payroll_year,
 	cpib.name,
-	round(avg(cp.value), 2) AS avg_salary_per_industry,
-	 round(
+	ROUND(AVG(cp.value), 2) AS avg_salary_per_industry,
+	 ROUND(
     100 * (
-      avg(cp.value) / lag(avg(cp.value)) over (partition by cpib.name order by cp.payroll_year) - 1
+      AVG(cp.value) / LAG(AVG(cp.value)) over (partition by cpib.name order by cp.payroll_year) - 1
     ),
     2
   ) AS salary_change_pct,
   CASE 
-    WHEN avg(cp.value) / lag(avg(cp.value)) over (partition by cpib.name order by cp.payroll_year) > 1 THEN 'Increasing'
-    WHEN avg(cp.value) / lag(avg(cp.value)) over (partition by cpib.name order by cp.payroll_year) < 1 THEN 'Decreasing'
+    WHEN AVG(cp.value) / LAG(AVG(cp.value)) over (partition by cpib.name order by cp.payroll_year) > 1 THEN 'Increasing'
+    WHEN AVG(cp.value) / LAG(AVG(cp.value)) over (partition by cpib.name order by cp.payroll_year) < 1 THEN 'Decreasing'
     ELSE 'Unchanged'
   END AS salary_trend
 FROM czechia_payroll cp
@@ -117,7 +117,7 @@ LEFT JOIN
 	v_ms_question_2 q2 ON q1.payroll_year = q2.YEAR 
 HAVING salary_food_ratio IS NOT NULL ;
 
-CREATE OR REPLACE TABLE t_martin_snajdr_project_sql_primary_final AS 
+
 SELECT 
 	s.payroll_year,
 	gdp.GDP,
@@ -138,4 +138,8 @@ LEFT JOIN
 	v_ms_question_2 f ON f.YEAR = s.payroll_year
 LEFT JOIN 
 	v_ms_question_two f2 ON f2.food = f.name
+	
+	
+SELECT *
+FROM v_ms_gdp_food_salary_4_5 
 	
