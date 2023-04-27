@@ -16,7 +16,6 @@ WHERE e.country = 'Czech Republic';
 
 
 /*salary_yearly_increase/decrease*/
-CREATE OR REPLACE VIEW v_ms_yearly_salary_increase_total1 AS  
 SELECT 
     cp1.payroll_year,
     ROUND(AVG(cp1.value)) AS average_salary,
@@ -35,7 +34,7 @@ WHERE cp1.value_type_code != '316'
 GROUP BY 
     cp1.payroll_year;
 
-CREATE OR REPLACE VIEW v_ms_yearly_food_increase_total1 AS 
+
 SELECT
     CONCAT(YEAR(cp.date_from)) AS year_range,
     ROUND(AVG(cp.value), 2) AS food_avg,
@@ -46,7 +45,7 @@ FROM
 GROUP BY
     year_range;
 
-
+/**4.Existuje rok, ve kterém byl meziroční nárůst cen potravin výrazně vyšší než růst mezd (větší než 10 %)?**/
 SELECT 
 	gdp.`year`,
 	gdp.GDP,
@@ -64,7 +63,7 @@ LEFT JOIN
 	v_ms_yearly_salary_increase_total1 s ON s.payroll_year = gdp.`year` 
 WHERE gdp.`year` >= 2000;
 
-
+/**1.Rostou v průběhu let mzdy ve všech odvětvích, nebo v některých klesají?**/
 SELECT
 	cp.payroll_year,
 	cpib.name,
@@ -102,7 +101,7 @@ SELECT
 FROM v_ms_food_increase f
 GROUP BY f.name, f.`year` 
 
-
+/**2.Kolik je možné si koupit litrů mléka a kilogramů chleba za první a poslední srovnatelné období v dostupných datech cen a mezd?**/
 SELECT
 	q1.payroll_year,
 	q1.name AS industry,
@@ -139,7 +138,12 @@ LEFT JOIN
 LEFT JOIN 
 	v_ms_question_two f2 ON f2.food = f.name
 	
-	
+/**5.Má výška HDP vliv na změny ve mzdách a cenách potravin? Neboli, 
+pokud HDP vzroste výrazněji v jednom roce, projeví se to na cenách potravin či mzdách ve stejném nebo násdujícím roce výraznějším růstem?**/
 SELECT *
 FROM v_ms_gdp_food_salary_4_5 
+
+/**3.Která kategorie potravin zdražuje nejpomaleji (je u ní nejnižší percentuální meziroční nárůst)?**/
+SELECT *
+FROM v_ms_food_increase 
 	
